@@ -92,8 +92,7 @@ private:
     CompareStringOrdinalFn ordinal_;
 };
 
-// Returns the parsing name (the full path, for file system items) of an item. Free with
-// CoTaskMemFree.
+// Returns the parsing name (the full path, for file system items) of an item. Free with CoTaskMemFree.
 wchar_t *ParsingName(IShellFolder *folder, LPCITEMIDLIST pidl) {
     STRRET sr;
     wchar_t *name = NULL;
@@ -103,8 +102,7 @@ wchar_t *ParsingName(IShellFolder *folder, LPCITEMIDLIST pidl) {
 }
 
 // Returns path in the form shared by every route to the same place: paths on mapped network drives
-// become network paths ("M:\x" -> "\\server\share\x"), others stay as they are. Free with
-// CoTaskMemFree.
+// become network paths ("M:\x" -> "\\server\share\x"), others stay as they are. Free with CoTaskMemFree.
 wchar_t *CanonicalPath(const wchar_t *path) {
     UNIVERSAL_NAME_INFOW probe;
     DWORD size = sizeof(probe);
@@ -143,7 +141,7 @@ bool ResolvePath(IShellFolder *desktop, const wchar_t *filePath, wchar_t **folde
     DWORD got = GetFullPathNameW(filePath, len, full, &filePart);
     if (got && got < len && filePart) {
         *file = ShellPath(desktop, full);
-        *filePart = L'\0';  // leaves the folder (with a trailing backslash, which parses fine)
+        *filePart = L'\0';  // Leaves the folder (with a trailing backslash, which parses fine).
         *folder = ShellPath(desktop, full);
     }
     CoTaskMemFree(full);
@@ -166,9 +164,9 @@ int ZOrderRank(HWND hwnd) {
 
 // Recency of an Explorer window/tab. Compared lexicographically: lower is more recent.
 struct Recency {
-    int  topLevelRank;  // z-order of the Explorer frame window
-    bool hiddenTab;     // false for the tab currently shown in its frame (Windows 11 tabs)
-    int  tabRank;       // z-order of the tab among its frame's children
+    int  topLevelRank;  // z-order of the Explorer frame window.
+    bool hiddenTab;     // false for the tab currently shown in its frame (Windows 11 tabs).
+    int  tabRank;       // z-order of the tab among its frame's children.
 
     bool operator<(const Recency &o) const {
         if (topLevelRank != o.topLevelRank) return topLevelRank < o.topLevelRank;
@@ -318,7 +316,7 @@ ExplorerFileList *FindAndRead(IShellFolder *desktop, const wchar_t *folderPath, 
     // The last candidate is the desktop itself, which shows the Desktop folder but isn't in the
     // collection. It's behind every window, so a window showing the folder is preferred.
     for (long i = 0; i <= windowCount; ++i) {
-        VARIANT index;  // the window's position; left empty for the desktop lookup
+        VARIANT index;  // The window's position; left empty for the desktop lookup.
         VariantInit(&index);
         if (i < windowCount) {
             index.vt = VT_I4;
@@ -353,7 +351,7 @@ ExplorerFileList *FindAndRead(IShellFolder *desktop, const wchar_t *folderPath, 
     return list;
 }
 
-} // namespace
+} // Namespace
 
 extern "C" ExplorerFileList *ExplorerOrder_GetFiles(const wchar_t *filePath) {
     if (!filePath || !*filePath) return NULL;
@@ -371,9 +369,9 @@ extern "C" ExplorerFileList *ExplorerOrder_GetFiles(const wchar_t *filePath) {
     PathComparer comparer;
     wchar_t *canonicalFolder = CanonicalPath(folderPath);
     ExplorerFileList *list =
-        canonicalFolder ? FindAndRead(desktop.get(), canonicalFolder, shellFilePath ? PathFindFileNameW(shellFilePath) : NULL,
-                                      comparer)
-                        : NULL;
+        canonicalFolder ? FindAndRead(
+            desktop.get(), canonicalFolder, shellFilePath ? PathFindFileNameW(shellFilePath) : NULL, comparer
+        ) : NULL;
 
     CoTaskMemFree(canonicalFolder);
     CoTaskMemFree(folderPath);
